@@ -19,16 +19,52 @@
     #   ansible.builtin.debug:
     #     msg: "Mensagem de teste"
     
-    - name: Lista o ultimo arquivo criado
-      shell: " ls -lat /home/roney/Documents/ansible-remocao/arquivo* | head -1 | awk '{print $9}' "
-      register: lsout
-      tags: lsout
-    - debug: msg="{{lsout.stdout}} "
+    # - name: Lista o ultimo arquivo criado
+    #   shell: " ls -lat /home/roney/Documents/ansible-remocao/arquivo* | head -1 | awk '{print $9}' "
+    #   register: lsout
+    #   tags: lsout
+    # - debug: msg="{{lsout.stdout}} "
 
-    - name: Remove arquivos antigos com mais de 2 dias
+    # - name: Remove arquivos antigos com mais de 2 dias
+    #   become: yes
+    #   shell: " find /home/roney/Documents/ansible-remocao/* -type f -mtime +2  -name 'arquivo_*' | xargs rm -f "
+    # - debug: 
+    #     msg:
+    #     - " Arquivos removidos"
+#### USAMOS A ROLE clean_environment_local
+#### NAO DA PRA LOCALIZAR COM O FIND POIS (Select files whose age is equal to or greater than the specified time.)
+    - name: Procurar os arquivos com mais de 3 dias com o modulo find 
       become: yes
-      shell: " find /home/roney/Documents/ansible-remocao/* -type f -mtime +2  -name 'arquivo_*' | xargs rm -f "
-    - debug: 
-        msg:
-        - " Arquivos removidos"
+      find:
+        paths: /home/roney/Documents/ansible-remocao/
+        patterns: arquivo_*
+        age: 2d
+        age_stamp: mtime
+      register: files_found
+    - debug: var=item.qualquer
+      with_items: "{{ files_found.files }}"
+    # https://www.middlewareinventory.com/blog/ansible-find-examples/
+    # https://docs.ansible.com/ansible/2.5/modules/find_module.html
+
+
+    # - name: Remove arquivos localizados antigos com base na task anterior
+    #   become: yes
+    #   file: 
+    #     path: "{{ item.path }}"
+    #     state: absent
+    #   with_items: "{{ files_found.files }}"
+
+
+    # - name: Clean files from old bundles (essa remove os arquivos especificados)
+    #   become: yes
+    #   file:
+    #     path: "{{ item }}"
+    #     state: absent
+    #   with_items:
+    #     - '/home/roney/Documents/ansible-remocao/arquivo_20211104.txt'
+    #     - '/home/roney/Documents/ansible-remocao/arquivo_20211103.txt'
+    #     - '/home/roney/Documents/ansible-remocao/arquivo_20211102.txt'
+    #     - '/home/roney/Documents/ansible-remocao/arquivo_20211101.txt'
+
+
 
