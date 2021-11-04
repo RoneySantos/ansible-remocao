@@ -1,0 +1,9 @@
+---
+- name: Teste ne, testando
+  become: yes
+  shell:
+    cmd: hostname
+
+- name: Display the config
+  debug:
+    msg: "The hostname is {{ ansible_net_hostname }} and the OS is {{ ansible_net_version }}"

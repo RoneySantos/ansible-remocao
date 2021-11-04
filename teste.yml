@@ -1,0 +1,34 @@
+#(C) Umbrella Comporation Industries 
+---
+
+# | ----------------------- |
+# |          Teste          |
+# | ----------------------- |
+
+- name: Lab para verificacao de arquivos
+  gather_facts: false
+  hosts: lab-roney
+  tasks:
+    # - name: Teste testando
+    #   become: yes
+    #   shell:
+    #     cmd: hostname
+  
+    # - name: Escreva uma mensagem
+    #   become: yes
+    #   ansible.builtin.debug:
+    #     msg: "Mensagem de teste"
+    
+    - name: Lista o ultimo arquivo criado
+      shell: " ls -lat /home/roney/Documents/ansible-remocao/arquivo* | head -1 | awk '{print $9}' "
+      register: lsout
+      tags: lsout
+    - debug: msg="{{lsout.stdout}} "
+
+    - name: Remove arquivos antigos com mais de 2 dias
+      become: yes
+      shell: " find /home/roney/Documents/ansible-remocao/* -type f -mtime +2  -name 'arquivo_*' | xargs rm -f "
+    - debug: 
+        report:
+        - " Arquivos removidos"
+
