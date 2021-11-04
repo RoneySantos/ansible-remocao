@@ -29,6 +29,6 @@
       become: yes
       shell: " find /home/roney/Documents/ansible-remocao/* -type f -mtime +2  -name 'arquivo_*' | xargs rm -f "
     - debug: 
-        report:
+        msg:
         - " Arquivos removidos"
 
